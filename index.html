@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darknet Market</title>
+    <link rel = "stylesheet" href="style1.css">
+<style>
+body{
+    background-color: black;
+    font-family: sans-serif;
+}
+.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0a0a0a;
+    padding: 20px 40px;
+    border-bottom: 2px solid #111;
+    box-shadow: 0 2px 10px rgba(0, 255, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-wrap: wrap;
+}
+
+.cart-button {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s;
+}
+
+.cart-button:hover {
+    color: #0f0;
+}
+
+.cart-icon {
+    font-size: 1.5em;
+}
+
+.logo {
+    font-size: 2em;
+    font-weight: bold;
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    flex: 0 0 auto;
+}
+
+.links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;
+}
+
+.links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.links a::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: #0f0;
+    transition: width 0.3s ease;
+}
+
+.links a:hover {
+    color: #0f0;
+}
+
+.links a:hover::after {
+    width: 100%;
+}
+
+.product-section {
+    display: flex;
+    padding: 40px;
+    gap: 40px;
+    background: #0a0a0a;
+    
+}
+
+/* Левый фильтр */
+.filter {
+    width: 35%;
+    position: sticky;
+    top: 100px;
+    background: #111;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+    height: fit-content;
+}
+
+.filter h2 {
+    color: #0f0;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.filter ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filter li {
+    margin: 10px 0;
+}
+
+.filter a {
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.filter a:hover {
+    color: #0f0;
+}
+
+/* Правый блок с карточками */
+.search-container {
+    margin: 20px 0;
+    text-align: left;
+  }
+  
+  .product-card {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+
+.product-card.hidden {
+    opacity: 0;
+    transform: translateY(20px); 
+}
+  
+  #searchInput {
+    padding: 10px;
+    width: 80%;
+    max-width: 400px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.product-card {
+    background-color: #2c2f38;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.product-card h3 {
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.product-card .price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f4c542;
+    margin-top: auto;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+/* Оверлей для блокировки фона */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    display: none;
+}
+
+.modal {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+}
+
+.modal.show {
+    opacity: 1; 
+}
+
+.modal-content {
+    background-color: #2c2f38;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    gap: 20px;
+    max-width: 800px;
+    width: 80%;
+    transform: scale(0.7); 
+    transition: transform 0.3s ease; 
+}
+ 
+.modal.show .modal-content {
+    transform: scale(1); 
+}
+
+.modal-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.modal-details {
+    color: white;
+}
+
+.modal-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.modal-description {
+    margin-bottom: 20px;
+}
+
+.modal-price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #f4c542;
+}
+
+.buy-button {
+    padding: 10px 20px;
+    background-color: #0f0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buy-button:hover {
+    background-color: #0c0;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    font-size: 2em;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #0f0;
+}
+.footer {
+    width: 100%; 
+    text-align: center; 
+    background-color: #0a0a0a; 
+    color: #0f0; 
+    padding: 20px 0; 
+    position: relative; 
+    border-bottom-left-radius: 5ex;
+    border-bottom-right-radius: 5ex;
+
+}
+
+.footer p {
+    margin: 0; 
+}
+
+.blackout {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: black;
+color: red;
+font-size: 3em;
+text-align: center;
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 0;
+visibility: hidden;
+transition: opacity 2s;
+}
+@media (max-width: 1200px) {
+    .product-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .product-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .product-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .site-header{
+        padding-top: 30px;
+    }
+    .search-container {
+        text-align: center;
+      }
+    .product-section {
+        flex-direction: column; 
+        padding-top: 30px; 
+    }
+
+    .filter {
+        width: 100%; 
+        margin-bottom: 20px; 
+        background: #111;
+        position: relative; 
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+    }
+
+    .filter h2 {
+        text-align: center;
+        font-size: 1.2em;
+        color: #0f0;
+    }
+
+    .filter ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .filter li {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    .filter-category {
+        text-decoration: none;
+        color: #0f0;
+        font-size: 1em;
+    }
+
+    .filter-category:hover {
+        color: #f4c542;
+    }
+
+    .product-list {
+        margin-top: 20px;
+        margin-bottom: 40px; 
+    }
+
+    .product-card {
+        width: 100%; 
+        margin-bottom: 20px; 
+    }
+}
+
+@media (max-width: 800px) {
+    .logo{
+        display: none;
+    }
+}
+</style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="logo">Darknet Market</div>
+        <nav class="links">
+            <a href="about.html">О нас</a>
+            <a href="index1.html">Магазин</a>
+            <a href="contact.html">Связь</a>
+        </nav>
+        <a href = "cart.html" class = "cart-button">
+            <span class = "cart-icon">🛒</span>
+        </a>
+    </header>
+    
+    <main class="product-section">
+        <aside class="filter">
+            <h2>Категории</h2>
+            <ul>
+                <li><a href="#" class="filter-category" data-category="all">Все товары</a></li>
+                <li><a href="#" class="filter-category" data-category="documents">Фальшивые документы</a></li>
+                <li><a href="#" class="filter-category" data-category="digital">Цифровые услуги</a></li>
+                <li><a href="#" class="filter-category" data-category="hacking">Хакерские инструменты</a></li>
+                <li><a href="#" class="filter-category" data-category="unusual">Необычное</a></li>
+            </ul>
+            <h2> Или поиск товара</h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Введите название товара">
+              </div>
+        </aside>
+        <div class="product-list">
+            <div class = "product-3d"> <div class="product-card" data-category="documents" data-description="Поддельный паспорт, который проходит базовые проверки в большинстве случаев."> <div class="image-placeholder"> <img src="images/passport.jpg" alt="Фальшивый паспорт" class="product-image"> </div> <h3>Фальшивый паспорт</h3> <p class="price">$20,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="Удалённый доступ к серверу для перехвата данных и управления системой."> <div class="image-placeholder"> <img src="images/network.jpg" alt="Удалённый доступ к серверу" class="product-image"> </div> <h3>Удалённый доступ к серверу</h3> <p class="price">$5,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="hacking" data-description="Компактный чемоданчик с необходимыми инструментами для взлома устройств."> <div class="image-placeholder"> <img src="images/bag.jpg" alt="Чёрный чемоданчик хакера" class="product-image"> </div> <h3>Чёрный чемоданчик хакера</h3> <p class="price">$12,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="unusual" data-description="Биометрическая маска, которая имитирует лицо другого человека для обхода проверок."> <div class="image-placeholder"> <img src="images/mask.png" alt="Биометрическая маска" class="product-image"> </div> <h3>Биометрическая маска</h3> <p class="price">$8,500</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Фальшивый диплом университета с поддельными данными."> <div class="image-placeholder"> <img src="images/diplom.jpg" alt="Фальшивый диплом" class="product-image"> </div> <h3>Фальшивый диплом университета</h3> <p class="price">$4,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="Цифровая личность (ID), включающая все личные данные для использования в сети."> <div class="image-placeholder"> <img src="images/socface.jpg" alt="Цифровая личность" class="product-image"> </div> <h3>Цифровая личность (ID)</h3> <p class="price">$15,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="hacking" data-description="Создание и управление ботнет-сетью для проведения атак или сбора данных."> <div class="image-placeholder"> <img src="images/Botnet.png" alt="Ботнет-сеть" class="product-image"> </div> <h3>Ботнет-сеть</h3> <p class="price">$22,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Создание клона банковской карты с возможностью снятия средств."> <div class="image-placeholder"> <img src="images/bankcard.jpg" alt="Клон банковской карты" class="product-image"> </div> <h3>Клон банковской карты</h3> <p class="price">$1,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Поддельные водительские права для использования в различных ситуациях."> <div class="image-placeholder"> <img src="images/drivecard.jpg" alt="Поддельные водительские права" class="product-image"> </div> <h3>Поддельные водительские права</h3> <p class="price">$3,200</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="Зашифрованный VPN-сервер для безопасного соединения и анонимного доступа."> <div class="image-placeholder"> <img src="images/vpn.jpeg" alt="Зашифрованный VPN-сервер" class="product-image"> </div> <h3>Зашифрованный VPN-сервер</h3> <p class="price">$3,500</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="unusual" data-description="Социальные профили с историей, включающие реальные действия и активности."> <div class="image-placeholder"> <img src="images/profil.png" alt="Социальные профили с историей" class="product-image"> </div> <h3>Социальные профили с историей</h3> <p class="price">$2,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="Цифровой криптокошелёк с полной историей транзакций и безопасностью."> <div class="image-placeholder"> <img src="images/crypto.jpeg" alt="Криптокошелёк с историей" class="product-image"> </div> <h3>Криптокошелёк с историей</h3> <p class="price">$6,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="unusual" data-description="Голосовой модификатор с использованием AI для изменения голоса в реальном времени."> <div class="image-placeholder"> <img src="images/AI.jpg" alt="Голосовой модификатор" class="product-image"> </div> <h3>Голосовой модификатор (AI)</h3> <p class="price">$7,500</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Поддельный бейдж охраны для обхода систем безопасности."> <div class="image-placeholder"> <img src="images/bage.jpeg" alt="Поддельный бейдж охраны" class="product-image"> </div> <h3>Поддельный бейдж охраны</h3> <p class="price">$900</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="SIM-карта с функцией отслеживания для контроля над телефонными звонками и местоположением."> <div class="image-placeholder"> <img src="images/sim.jpg" alt="SIM-карта" class="product-image"> </div> <h3>SIM-карта с отслеживанием</h3> <p class="price">$600</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Личность умершего с документами и данными для использования в различных целях."> <div class="image-placeholder"> <img src="images/dead.jpg" alt="Личность умершего" class="product-image"> </div> <h3>Личность умершего</h3> <p class="price">$18,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="Ретина-скан генератор для создания уникальных биометрических данных."> <div class="image-placeholder"> <img src="images/generator.jpg" alt="Ретина-скан генератор" class="product-image"> </div> <h3>Ретина-скан генератор</h3> <p class="price">$10,500</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="hacking" data-description="Устройство для удалённого прослушивания телефонных разговоров и переговоров."> <div class="image-placeholder"> <img src="images/mask.jpg" alt="Биометрическая маска" class="product-image"> </div> <h3>Удалённое прослушивание</h3> <p class="price">$4,500</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="unusual" data-description="Фейковая справка о вакцинации с поддельными данными и печатями."> <div class="image-placeholder"> <img src="images/spravka.jpg" alt="Фейковая справка о вакцинации" class="product-image"> </div> <h3>Фейковая справка о вакцинации</h3> <p class="price">$1,200</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="Доступ к камере наблюдения с возможностью удалённого управления."> <div class="image-placeholder"> <img src="https://main-cdn.sbermegamarket.ru/upload/%D0%BA%D0%B0%D0%BC%D0%B5%D1%80%D0%B0_668500ad38c1d.jpg" alt="Доступ к камерe наблюдения" class="product-image"> </div> <h3>Доступ к камерe наблюдения</h3> <p class="price">$2,200</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Дубликат ключ-карты отеля для доступа в номера и служебные помещения."> <div class="image-placeholder"> <img src="images/hotel.jpeg" alt="Дубликат ключ-карты отеля" class="product-image"> </div> <h3>Дубликат ключ-карты отеля</h3> <p class="price">$850</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="hacking" data-description="Анонимная доставка дронов для транспортировки различных предметов."> <div class="image-placeholder"> <img src="images/delivery.png" alt="Анонимная доставка дронов" class="product-image"> </div> <h3>Анонимная доставка дронов</h3> <p class="price">$6,600</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="hacking" data-description="Запрещённые субстанции (1г) с возможностью доставки и покупки."> <div class="image-placeholder"> <img src="images/narkota.jpg" alt="Запрещённые субстанции" class="product-image"> </div> <h3>Запрещённые субстанции (1г)</h3> <p class="price">$400</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="hacking" data-description="Профессиональный фальсификатор документов и электронных следов."> <div class="image-placeholder"> <img src="images/hacker.jpg" alt="Профессиональный фальсификатор" class="product-image"> </div> <h3>Профессиональный фальсификатор</h3> <p class="price">$25,000</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="digital" data-description="USB-вирус для заражения и контроля над внешними устройствами."> <div class="image-placeholder"> <img src="images/fleshka.jpg" alt="USB-вирус" class="product-image"> </div> <h3>USB-вирус</h3> <p class="price">$9,900</p> </div> </div> <div class = "product3d"> <div class="product-card" data-category="documents" data-description="Набор поддельных медалей для использования в различных ситуациях."> <div class="image-placeholder"> <img src="images/medali.jpeg" alt="Набор поддельных медалей" class="product-image"> </div> <h3>Набор поддельных медалей</h3> <p class="price">$1,000</p> </div> </div>
+        </div>
+    </main>
+    <div class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img src="" alt="Image" class="modal-image">
+            <div class="modal-details">
+                <h2 class="modal-title"></h2>
+                <p class="modal-description"></p>
+                <p class="modal-price"></p>
+                <button class="buy-button">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>©Copyright Все права не защищены</p>
+    </div>
+
+
+
+    <script>
+        //Фильтр
+const filterLinks = document.querySelectorAll('.filter-category');
+const productCards = document.querySelectorAll('.product-card');
+
+filterLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const category = this.getAttribute('data-category');
+
+        productCards.forEach(card => {
+            if (category === 'all' || card.getAttribute('data-category') === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+
+// Модальное окно 
+const modal = document.querySelector('.modal');
+const modalImage = document.querySelector('.modal-image');
+const modalTitle = document.querySelector('.modal-title');
+const modalDescription = document.querySelector('.modal-description');
+const modalPrice = document.querySelector('.modal-price');
+const modalClose = document.querySelector('.modal-close');
+const buyButton = document.querySelector('.buy-button');
+
+
+productCards.forEach(card => {
+    card.addEventListener('click', function() {
+        const title = card.querySelector('h3').textContent;
+        const price = card.querySelector('.price').textContent;
+        const description = card.getAttribute('data-description') || 'Описание товара отсутствует.';
+        const imgElement = card.querySelector('img');
+        const imageSrc = imgElement ? imgElement.src : 'images/placeholder.jpg';
+        
+        modalImage.src = imageSrc;
+        modalTitle.textContent = title;
+        modalDescription.textContent = description;
+        modalPrice.textContent = price;
+        
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10); 
+    });
+});
+
+modalClose.addEventListener('click', function() {
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none'; 
+    }, 300); // 
+});
+
+
+window.addEventListener('click', function(e) {
+    if (e.target === modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none'; 
+        }, 300);
+    }
+});
+
+
+
+//поиск
+const searchInput = document.getElementById('searchInput');
+const productsCards = document.querySelectorAll('.product-list .product-card'); 
+
+function filterProducts() {
+  const searchTerm = searchInput.value.toLowerCase(); 
+
+  productsCards.forEach(card => {
+    const title = card.querySelector('h3').textContent.toLowerCase();
+    const description = card.querySelector('.product-description') ? card.querySelector('.product-description').textContent.toLowerCase() : '';
+
+   
+    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+      card.style.display = 'block'; 
+    } else {
+      card.style.display = 'none'; 
+    }
+  });
+}
+
+
+searchInput.addEventListener('input', filterProducts);
+
+
+searchInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    filterProducts();
+  }
+});
+
+buyButton.addEventListener('click', function(e) {
+    e.stopPropagation(); // чтобы не открывалось модальное окно
+
+    const title = modalTitle.textContent;
+    const price = modalPrice.textContent;
+    const image = modalImage.src;
+
+    const product = { title, price, image };
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    alert('Товар добавлен в корзину!');
+});
+
+
+document.addEventListener('mousemove', function(e) {
+    let dx = e.pageX - window.innerWidth / 2
+    let dy = e.pageY - window.innerHeight / 2
+    let angleX = 20 * dx / window.innerWidth / 2
+    let angleY = 20 * dy / window.innerHeight / 2
+    block.style.transform = `rotateX(${angleY}deg) rotateY(${angleX}deg)`
+})
+
+document.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('mousemove', function(e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const angleX = (y - centerY) / 10;
+        const angleY = (x - centerX) / -10;
+        card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', function() {
+        card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    card.style.transition = 'transform 0.2s ease';
+    card.style.transformStyle = 'preserve-3d';
+});
+
+
+    </script>
+</body>
+</html>
